@@ -27,6 +27,7 @@ export const purchaseBurger = (orderData) => {
         dispatch(purchaseStart());
         axios.post('/orders.json', orderData).then(response => {
             dispatch(purchaseSuccess(response.data.name, orderData));
+            dispatch(reset());
         }).catch(error => {
             dispatch(purchaseFail(error));
         });
@@ -38,3 +39,9 @@ export const purchaseInit = () => {
         type: actionTypes.PURCHASE_INIT
     };
 };
+
+export const reset = () => {
+    return {
+        type: actionTypes.RESET
+    }
+}

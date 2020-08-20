@@ -5,3 +5,4 @@ export const PURCHASE_START = 'PURCHASE_START';
 export const PURCHASE_SUCCESS = 'PURCHASE_SUCCESS';
 export const PURCHASE_FAIL = 'PURCHASE_FAIL';
 export const PURCHASE_INIT = 'PURCHASE_INIT';
+export const RESET = 'RESET';
