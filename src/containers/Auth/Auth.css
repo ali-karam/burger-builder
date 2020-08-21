@@ -13,3 +13,11 @@
         width: 500px;
     }
 }
+
+.Error {
+    color: black;
+    border-radius: 3px;
+    padding: 5px;
+    font-weight: bold;
+    background-color: salmon;
+}

@@ -94,10 +94,16 @@ class Auth extends Component {
         switch(errorMessage) {
             case 'EMAIL_EXISTS':
                 return 'Sorry the email already exists, please try a different email.';
+            case 'INVALID_EMAIL':
+                return 'Sorry please enter a valid email.';
+            case 'MISSING_PASSWORD':
+                return 'Please enter your password.';
+            case 'MISSING_EMAIL':
+                return 'Please enter your email.';
             case 'INVALID_PASSWORD':
                 return 'Sorry the password is incorrect, please try again.';
             case 'WEAK_PASSWORD : Password should be at least 6 characters':
-                return 'Please enter at least 6 characters for the password.'
+                return 'Please enter at least 6 characters for the password.';
             default: return 'Something went wrong';
         }
     };
@@ -132,7 +138,9 @@ class Auth extends Component {
         let errorMessage = null;
         if(this.props.error !== null) {
             errorMessage = (
-                <p>{this.formatErrorMessage(this.props.error.message)}</p>
+                <p className={classes.Error}>
+                    {this.formatErrorMessage(this.props.error.message)}
+                </p>
             );
         }
 
