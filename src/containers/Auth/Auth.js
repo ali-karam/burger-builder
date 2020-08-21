@@ -13,7 +13,8 @@ class Auth extends Component {
                 'Please enter a valid email in the form of: abc@domain.com'),
             password: this.configureInput('password', 'Password', '', true, 
                 'Please enter at least 6 characters', 6)
-        }
+        },
+        isSignup: true
     };
 
     configureInput(type, placeholder, value, required, userMessage, minLength, maxLength) {
@@ -79,8 +80,14 @@ class Auth extends Component {
     submitHandler = (event) => {
         event.preventDefault();
         this.props.onAuth(this.state.controls.email.value, 
-            this.state.controls.password.value);
-    }
+            this.state.controls.password.value, this.state.isSignup);
+    };
+
+    switchAuthModeHandler = () => {
+        this.setState(prevState => {
+            return {isSignup: !prevState.isSignup}
+        });
+    };
 
     render () {
         const formElementsArray = [];
@@ -110,6 +117,8 @@ class Auth extends Component {
                     {form}
                     <Button btnType="Success">Submit</Button>
                 </form>
+                <Button btnType="Danger" clicked={this.switchAuthModeHandler}>Switch to 
+                    {this.state.isSignup ? ' Sign In' : ' Sign Up'}</Button>
             </div>
         );
     }
@@ -117,7 +126,7 @@ class Auth extends Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onAuth: (email, password) => dispatch(actions.auth(email, password))
+        onAuth: (email, password, isSignup) => dispatch(actions.auth(email, password, isSignup))
     };
 };
 
