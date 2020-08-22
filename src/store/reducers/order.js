@@ -36,7 +36,7 @@ const purchaseSuccess = (state, action) => {
 const purchaseFail = (state, action) => {
     return {
         ...state,
-        loading: false,
+        loading: false
     };
 };
 
