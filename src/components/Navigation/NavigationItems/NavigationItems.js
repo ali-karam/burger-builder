@@ -1,18 +1,23 @@
 import React from 'react';
 import classes from './NavigationItems.css';
 import NavigationItem from './NavigationItem/NavigationItem';
+import Aux from '../../../hoc/Aux/Aux';
 
 const navigationItems = (props) => {
-    let authLink = <NavigationItem link="/auth">Sign Up/Sign In</NavigationItem>;
+    let authLinks = <NavigationItem link="/auth">Sign Up/Sign In</NavigationItem>;
     if(props.isAuthenticated) {
-        authLink = <NavigationItem link="/logout">Logout</NavigationItem>;
+        authLinks = (
+            <Aux>
+                <NavigationItem link="/orders">Orders</NavigationItem>
+                <NavigationItem link="/logout">Logout</NavigationItem>   
+            </Aux>
+        );
     }
 
     return(
         <ul className={classes.NavigationItems}>
             <NavigationItem link="/" exact>Burger Builder</NavigationItem>
-            <NavigationItem link="/orders">Orders</NavigationItem>
-            {authLink}
+            {authLinks}
         </ul>
     );
 };
