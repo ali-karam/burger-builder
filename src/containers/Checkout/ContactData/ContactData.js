@@ -30,7 +30,7 @@ class ContactData extends Component {
             }
         },
         formIsValid: false
-    }
+    };
 
     configureInput(type, placeholder, value, required, userMessage, minLength, maxLength) {
         let errorMessage = "Please enter a value";  
@@ -55,20 +55,22 @@ class ContactData extends Component {
         }
     }
 
-    orderHandler = (event) => {
-        event.preventDefault();
-        const formData = {};
-        for(let formElementId in this.state.orderForm) {
-            formData[formElementId] = this.state.orderForm[formElementId].value;
+    inputChangedHandler = (event, inputIdentifier) => {
+        const updatedOrderForm = {
+            ...this.state.orderForm
         }
-        const order = {
-            ingredients: this.props.ingredients,
-            price: this.props.price,
-            orderData: formData,
-            userId: this.props.userId
+        const updatedFormElement = {
+            ...updatedOrderForm[inputIdentifier]
         }
-        this.props.onOrder(order, this.props.token);
-    }
+        
+        updatedFormElement.value = event.target.value;
+        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, 
+            updatedFormElement.validation);
+        updatedFormElement.touched = true;
+        updatedOrderForm[inputIdentifier] = updatedFormElement;    
+        this.setState({orderForm: updatedOrderForm, formIsValid: 
+            this.checkFormValidity(updatedOrderForm)});
+    };
 
     checkValidity (value, rules) {
         let isValid = true;
@@ -96,24 +98,7 @@ class ContactData extends Component {
         return formIsValid;
     }
 
-    inputChangedHandler = (event, inputIdentifier) => {
-        const updatedOrderForm = {
-            ...this.state.orderForm
-        }
-        const updatedFormElement = {
-            ...updatedOrderForm[inputIdentifier]
-        }
-        
-        updatedFormElement.value = event.target.value;
-        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, 
-            updatedFormElement.validation);
-        updatedFormElement.touched = true;
-        updatedOrderForm[inputIdentifier] = updatedFormElement;    
-        this.setState({orderForm: updatedOrderForm, formIsValid: 
-            this.checkFormValidity(updatedOrderForm)});
-    }
-
-    render () {
+    renderForm = () => {
         const formElementsArray = [];
         for(let key in this.state.orderForm) {
             formElementsArray.push({
@@ -141,10 +126,29 @@ class ContactData extends Component {
         if(this.props.loading) {
             form = <Spinner/>;
         }
+        return form;
+    };
+
+    orderHandler = (event) => {
+        event.preventDefault();
+        const formData = {};
+        for(let formElementId in this.state.orderForm) {
+            formData[formElementId] = this.state.orderForm[formElementId].value;
+        }
+        const order = {
+            ingredients: this.props.ingredients,
+            price: this.props.price,
+            orderData: formData,
+            userId: this.props.userId
+        }
+        this.props.onOrder(order, this.props.token);
+    };
+
+    render () {
         return(
             <div className={classes.ContactData}>
                 <h4>Enter Your Contact Data</h4>
-                {form}
+                {this.renderForm()}
             </div>
         );
     }

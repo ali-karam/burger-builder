@@ -91,25 +91,15 @@ class Auth extends Component {
         });
     };
 
-    formatErrorMessage = (errorMessage) => {
-        switch(errorMessage) {
-            case 'EMAIL_EXISTS':
-                return 'Sorry the email already exists, please try a different email.';
-            case 'INVALID_EMAIL':
-                return 'Sorry please enter a valid email.';
-            case 'MISSING_PASSWORD':
-                return 'Please enter your password.';
-            case 'MISSING_EMAIL':
-                return 'Please enter your email.';
-            case 'INVALID_PASSWORD':
-                return 'Sorry the password is incorrect, please try again.';
-            case 'WEAK_PASSWORD : Password should be at least 6 characters':
-                return 'Please enter at least 6 characters for the password.';
-            default: return 'Something went wrong';
+    redirectOnAuth = () => {
+        let authRedirect = null;
+        if(this.props.isAuthenticated) {
+            authRedirect = <Redirect to={this.props.authRedirectPath}/>;
         }
+        return authRedirect;
     };
 
-    render () {
+    renderForm = () => {
         const formElementsArray = [];
         for(let key in this.state.controls) {
             formElementsArray.push({
@@ -136,6 +126,28 @@ class Auth extends Component {
             form = <Spinner/>;
         }
 
+        return form;
+    };
+
+    formatErrorMessage = (errorMessage) => {
+        switch(errorMessage) {
+            case 'EMAIL_EXISTS':
+                return 'Sorry the email already exists, please try a different email.';
+            case 'INVALID_EMAIL':
+                return 'Sorry please enter a valid email.';
+            case 'MISSING_PASSWORD':
+                return 'Please enter your password.';
+            case 'MISSING_EMAIL':
+                return 'Please enter your email.';
+            case 'INVALID_PASSWORD':
+                return 'Sorry the password is incorrect, please try again.';
+            case 'WEAK_PASSWORD : Password should be at least 6 characters':
+                return 'Please enter at least 6 characters for the password.';
+            default: return 'Something went wrong';
+        }
+    };
+
+    displayErrorMsg = () => {
         let errorMessage = null;
         if(this.props.error !== null) {
             errorMessage = (
@@ -144,23 +156,21 @@ class Auth extends Component {
                 </p>
             );
         }
+        return errorMessage;
+    };
 
-        let authRedirect = null;
-        if(this.props.isAuthenticated) {
-            authRedirect = <Redirect to={this.props.authRedirectPath}/>;
-        }
-
+    render () {
         return (
             <div className={classes.Auth}>
                 <form onSubmit={this.submitHandler}>
-                    {form}
+                    {this.renderForm()}
                     <Button btnType="Success">Submit</Button>
                 </form>
                 <Button btnType="Danger" clicked={this.switchAuthModeHandler}>
                     Switch to {this.state.isSignup ? ' Sign In' : ' Sign Up'}
                 </Button>
-                {authRedirect}
-                {errorMessage}
+                {this.redirectOnAuth()}
+                {this.displayErrorMsg()}
             </div>
         );
     }

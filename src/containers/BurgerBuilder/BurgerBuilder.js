@@ -11,7 +11,7 @@ import * as actions from '../../store/actions/index';
 class BurgerBuilder extends Component {
     state = {
         purchasing: false
-    }
+    };
 
     updatePurchaseState(ingredients) {
         const sum = Object.values(ingredients).reduce((sum, el) => {
@@ -27,24 +27,28 @@ class BurgerBuilder extends Component {
             this.props.onSetAuthRedirectPath('/checkout');
             this.props.history.push('/auth');
         }  
-    }
+    };
 
     purchaseCancelHandler = () => {
         this.setState({purchasing: false});
-    }
+    };
 
     purchaseContinueHandler = () => {
         this.props.onInitPurchase();
         this.props.history.push('/checkout');
-    }
-    
-    render() {
+    };
+
+    mapIngredientsToDisabledInfo = () => {
         const disabledInfo = {
             ...this.props.ingredients
         };
         for(let key in disabledInfo) {
             disabledInfo[key] = (disabledInfo[key] <= 0)
         }
+        return disabledInfo;
+    };
+    
+    render() {
         return (
             <Aux>
                 <Modal show={this.state.purchasing} modalClosed={this.purchaseCancelHandler}>
@@ -58,7 +62,7 @@ class BurgerBuilder extends Component {
                 <BuildControls 
                     ingredientAdded={this.props.onIngredientAdded}
                     ingredientRemoved={this.props.onIngredientRemoved}
-                    disabled={disabledInfo}
+                    disabled={this.mapIngredientsToDisabledInfo()}
                     purchasable={this.updatePurchaseState(this.props.ingredients)}
                     ordered={this.purchaseHandler}
                     price={this.props.totalPrice}

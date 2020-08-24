@@ -12,7 +12,7 @@ class Orders extends Component {
         this.props.onFetchOrders(this.props.token, this.props.userId);
     }
 
-    render() {
+    renderOrders = () => {
         let orders = <Spinner/>;
         if(!this.props.loading) {
             orders = (
@@ -24,9 +24,13 @@ class Orders extends Component {
                 ))
             );
         }
+        return orders;
+    };
+
+    render() {
         return(
             <div>
-                {orders}
+                {this.renderOrders()}
             </div>
         );
     }

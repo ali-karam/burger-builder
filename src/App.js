@@ -15,7 +15,7 @@ class App extends Component {
         this.props.onTryAutoLogin();
     }
 
-    render() {
+    renderRoutes = () => {
         let routes = (
             <Switch>
                 <Route path="/auth" component={Auth} />
@@ -36,10 +36,14 @@ class App extends Component {
                 </Switch>
             );
         }
+        return routes;
+    };
+
+    render() {
         return (
             <div>
                 <Layout>
-                    {routes}
+                    {this.renderRoutes()}
                 </Layout>
             </div>
         );
@@ -50,7 +54,7 @@ const mapStateToProps = state => {
     return {
         isAuthenticated: state.auth.token !== null
     }
-}
+};
 
 const mapDispatchToProps = (dispatch) => {
     return {
