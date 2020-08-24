@@ -6,7 +6,7 @@ const initialState = {
     purchased: false
 };
 
-const purchaseInit = (state, action) => {
+const purchaseConfirm = (state, action) => {
     return {
         ...state,
         purchased: false
@@ -64,7 +64,7 @@ const fetchOrdersFail = (state, action) => {
 
 const reducer = (state = initialState, action) => {
     switch(action.type) {
-        case actionTypes.PURCHASE_INIT: return purchaseInit(state, action);
+        case actionTypes.PURCHASE_CONFIRM: return purchaseConfirm(state, action);
         case actionTypes.PURCHASE_START: return purchaseStart(state, action);
         case actionTypes.PURCHASE_SUCCESS: return purchaseSuccess(state, action);         
         case actionTypes.PURCHASE_FAIL: return purchaseFail(state, action);
