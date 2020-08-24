@@ -6,6 +6,7 @@ import classes from './ContactData.css';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import Input from '../../../components/UI/Input/Input';
 import * as actions from '../../../store/actions/index';
+import {checkValidity} from '../../../shared/validation';
 
 class ContactData extends Component {
     state = {
@@ -15,7 +16,8 @@ class ContactData extends Component {
             zipCode: this.configureInput('text', 'Zip Code', '', true,
                 'Please enter a 5 digit Zip code' ,5, 5),
             country: this.configureInput('text', 'Country', '', true),
-            email: this.configureInput('email', 'Your Email', '', true),
+            email: this.configureInput('email', 'Your Email', '', true,
+                'Please enter a valid email in the form of: abc@domain.com'),
             deliveryMethod: {
                 elementType: 'select',
                 elementConfig: {
@@ -47,7 +49,8 @@ class ContactData extends Component {
             validation: {
                 required: required,
                 minLength: minLength,
-                maxLength: maxLength
+                maxLength: maxLength,
+                isEmail: type === 'email'
             },
             valid: false,
             touched: false,
@@ -64,7 +67,7 @@ class ContactData extends Component {
         }
         
         updatedFormElement.value = event.target.value;
-        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, 
+        updatedFormElement.valid = checkValidity(updatedFormElement.value, 
             updatedFormElement.validation);
         updatedOrderForm[inputIdentifier] = updatedFormElement;    
         this.setState({orderForm: updatedOrderForm, formIsValid: 
@@ -81,24 +84,6 @@ class ContactData extends Component {
         };
         this.setState({orderForm: updatedOrderForm});
     };
-
-    checkValidity (value, rules) {
-        let isValid = true;
-        
-        if(rules == null) {
-            return;
-        }
-        if (rules.required) {
-            isValid = value.trim() !== '' && isValid; 
-        }
-        if(rules.minLength) {
-            isValid = value.length >= rules.minLength && isValid;
-        }
-        if(rules.maxLength) {
-            isValid = value.length <= rules.maxLength && isValid;
-        }
-        return isValid;
-    }
 
     checkFormValidity (updatedOrderForm) {
         let formIsValid = true;
