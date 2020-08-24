@@ -72,7 +72,17 @@ class Auth extends Component {
                 ...this.state.controls[controlName],
                 value: event.target.value,
                 valid: this.checkValidity(event.target.value, 
-                    this.state.controls[controlName].validation),
+                    this.state.controls[controlName].validation)
+            }
+        };
+        this.setState({controls: updatedControls});
+    };
+
+    blurHandler = (controlName) => {
+        const updatedControls = {
+            ...this.state.controls,
+            [controlName]: {
+                ...this.state.controls[controlName],
                 touched: true
             }
         };
@@ -119,6 +129,7 @@ class Auth extends Component {
                 errorMessage={formElement.config.errorMessage}
                 touched={formElement.config.touched}
                 changed={(event) => this.inputChangedHandler(event, formElement.id)}
+                blurred={() => this.blurHandler(formElement.id)}
             />
         ));
 

@@ -10,7 +10,8 @@ const configureInput = (props, inputClasses) => {
                 {...props.elementConfig}
                 value={props.value}
                 onChange={props.changed}
-                autoComplete="off"/>;
+                autoComplete="off"
+                onBlur={props.blurred}/>;
             break;
         case('textarea'):
             inputElement = <textarea 

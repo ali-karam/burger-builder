@@ -66,10 +66,20 @@ class ContactData extends Component {
         updatedFormElement.value = event.target.value;
         updatedFormElement.valid = this.checkValidity(updatedFormElement.value, 
             updatedFormElement.validation);
-        updatedFormElement.touched = true;
         updatedOrderForm[inputIdentifier] = updatedFormElement;    
         this.setState({orderForm: updatedOrderForm, formIsValid: 
             this.checkFormValidity(updatedOrderForm)});
+    };
+
+    blurHandler = (inputIdentifier) => {
+        const updatedOrderForm = {
+            ...this.state.orderForm,
+            [inputIdentifier]: {
+                ...this.state.orderForm[inputIdentifier],
+                touched: true
+            }
+        };
+        this.setState({orderForm: updatedOrderForm});
     };
 
     checkValidity (value, rules) {
@@ -118,7 +128,8 @@ class ContactData extends Component {
                         invalid={!formElement.config.valid}
                         errorMessage={formElement.config.errorMessage}
                         touched={formElement.config.touched}
-                        changed={(event) => this.inputChangedHandler(event, formElement.id)}/>
+                        changed={(event) => this.inputChangedHandler(event, formElement.id)}
+                        blurred={() => this.blurHandler(formElement.id)}/>
                 ))}
                 <Button btnType="Success" disabled={!this.state.formIsValid}>Order</Button>
             </form>
