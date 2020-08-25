@@ -21,3 +21,6 @@ yarn-debug.log*
 yarn-error.log*
 src/baseUrl.js
 src/apiKey.js
+.firebase/hosting.YnVpbGQ.cache
+firebase.json
+.firebaserc
