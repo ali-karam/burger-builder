@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
 import asyncComponent from './hoc/asyncComponent/asyncComponent';
@@ -20,12 +20,12 @@ const asyncAuth = asyncComponent(() => {
     return import('./containers/Auth/Auth');
 });
 
-class App extends Component {
-    componentDidMount() {
-        this.props.onTryAutoLogin();
-    }
+const app = props => {
+    useEffect(() => {
+        props.onTryAutoLogin();
+    }, []);
 
-    renderRoutes = () => {
+    const renderRoutes = () => {
         let routes = (
             <Switch>
                 <Route path="/auth" component={asyncAuth} />
@@ -34,7 +34,7 @@ class App extends Component {
             </Switch>
         );
 
-        if(this.props.isAuthenticated) {
+        if(props.isAuthenticated) {
             routes = (
                 <Switch>
                     <Route path="/auth" component={asyncAuth} />
@@ -49,16 +49,14 @@ class App extends Component {
         return routes;
     };
 
-    render() {
-        return (
-            <div>
-                <Layout>
-                    {this.renderRoutes()}
-                </Layout>
-            </div>
-        );
-    }
-}
+    return (
+        <div>
+            <Layout>
+                {renderRoutes()}
+            </Layout>
+        </div>
+    );
+};
 
 const mapStateToProps = state => {
     return {
@@ -72,4 +70,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(app);
