@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {useState} from 'react';
 import {connect} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 
@@ -9,91 +9,105 @@ import classes from './Auth.css';
 import * as actions from '../../store/actions/index';
 import {checkValidity} from '../../shared/validation';
 
-class Auth extends Component {
-    state = {
-        controls: {
-            email: this.configureInput('email', 'Email Address', '', true, 
-                'Please enter a valid email in the form of: abc@domain.com'),
-            password: this.configureInput('password', 'Password', '', true, 
-                'Please enter at least 6 characters', 6)
-        },
-        isSignup: true
-    };
-
-    configureInput(type, placeholder, value, required, userMessage, minLength, maxLength) {
-        let errorMessage = "Please enter a value";  
-        if(userMessage != null) {
-            errorMessage = userMessage;
-        }
-        return {
-            elementType: 'input',
-            elementConfig: {
-                type: type,
-                placeholder: placeholder
-            },
-            value: value,
-            validation: {
-                required: required,
-                minLength: minLength,
-                maxLength: maxLength,
-                isEmail: type === 'email'
-            },
-            valid: false,
-            touched: false,
-            errorMessage: errorMessage
-        }
+const configureInput = (type, placeholder, value, required, userMessage, minLength, maxLength) => {
+    let errorMessage = "Please enter a value";  
+    if(userMessage != null) {
+        errorMessage = userMessage;
     }
+    return {
+        elementType: 'input',
+        elementConfig: {
+            type: type,
+            placeholder: placeholder
+        },
+        value: value,
+        validation: {
+            required: required,
+            minLength: minLength,
+            maxLength: maxLength,
+            isEmail: type === 'email'
+        },
+        valid: false,
+        touched: false,
+        errorMessage: errorMessage
+    }
+};
 
-    inputChangedHandler = (event, controlName) => {
+const formatErrorMessage = (errorMessage) => {
+    switch(errorMessage) {
+        case 'EMAIL_EXISTS':
+            return 'Sorry the email already exists, please try a different email.';
+        case 'INVALID_EMAIL':
+            return 'Sorry please enter a valid email.';
+        case 'MISSING_PASSWORD':
+            return 'Please enter your password.';
+        case 'MISSING_EMAIL':
+            return 'Please enter your email.';
+        case 'INVALID_PASSWORD':
+            return 'Sorry the password is incorrect, please try again.';
+        case 'WEAK_PASSWORD : Password should be at least 6 characters':
+            return 'Please enter at least 6 characters for the password.';
+        default: return 'Something went wrong';
+    }
+};
+
+const auth = props => {
+    const [authForm, setAuthForm] = useState({
+        email: configureInput('email', 'Email Address', '', true, 
+            'Please enter a valid email in the form of: abc@domain.com'),
+        password: configureInput('password', 'Password', '', true, 
+            'Please enter at least 6 characters', 6)
+    });
+    const [isSignup, setIsSignup] = useState(true);
+
+    const inputChangedHandler = (event, controlName) => {
         const updatedControls = {
-            ...this.state.controls,
+            ...authForm,
             [controlName]: {
-                ...this.state.controls[controlName],
+                ...authForm[controlName],
                 value: event.target.value,
                 valid: checkValidity(event.target.value, 
-                    this.state.controls[controlName].validation)
+                    authForm[controlName].validation)
             }
         };
-        this.setState({controls: updatedControls});
+        setAuthForm(updatedControls);
     };
 
-    blurHandler = (controlName) => {
+    const blurHandler = (controlName) => {
         const updatedControls = {
-            ...this.state.controls,
+            ...authForm,
             [controlName]: {
-                ...this.state.controls[controlName],
+                ...authForm[controlName],
                 touched: true
             }
         };
-        this.setState({controls: updatedControls});
+        setAuthForm(updatedControls)
     };
 
-    submitHandler = (event) => {
+    const submitHandler = (event) => {
         event.preventDefault();
-        this.props.onAuth(this.state.controls.email.value, 
-            this.state.controls.password.value, this.state.isSignup);
+        props.onAuth(authForm.email.value, 
+            authForm.password.value, isSignup);
     };
 
-    switchAuthModeHandler = () => {
-        this.setState(prevState => {
-            return {isSignup: !prevState.isSignup}
-        });
+    const switchAuthModeHandler = () => {
+        setIsSignup(!isSignup)
     };
 
-    redirectOnAuth = () => {
+    const redirectOnAuth = () => {
         let authRedirect = null;
-        if(this.props.isAuthenticated) {
-            authRedirect = <Redirect to={this.props.authRedirectPath}/>;
+        if(props.isAuthenticated) {
+            authRedirect = <Redirect to={props.authRedirectPath}/>;
         }
         return authRedirect;
     };
 
-    renderForm = () => {
+    const renderForm = () => {
         const formElementsArray = [];
-        for(let key in this.state.controls) {
+        for(let key in authForm) {
             formElementsArray.push({
                 id: key,
-                config: this.state.controls[key]
+                config: authForm[key]
             });
         }
 
@@ -107,64 +121,44 @@ class Auth extends Component {
                 invalid={!formElement.config.valid}
                 errorMessage={formElement.config.errorMessage}
                 touched={formElement.config.touched}
-                changed={(event) => this.inputChangedHandler(event, formElement.id)}
-                blurred={() => this.blurHandler(formElement.id)}
+                changed={(event) => inputChangedHandler(event, formElement.id)}
+                blurred={() => blurHandler(formElement.id)}
             />
         ));
 
-        if(this.props.loading) {
+        if(props.loading) {
             form = <Spinner/>;
         }
 
         return form;
     };
 
-    formatErrorMessage = (errorMessage) => {
-        switch(errorMessage) {
-            case 'EMAIL_EXISTS':
-                return 'Sorry the email already exists, please try a different email.';
-            case 'INVALID_EMAIL':
-                return 'Sorry please enter a valid email.';
-            case 'MISSING_PASSWORD':
-                return 'Please enter your password.';
-            case 'MISSING_EMAIL':
-                return 'Please enter your email.';
-            case 'INVALID_PASSWORD':
-                return 'Sorry the password is incorrect, please try again.';
-            case 'WEAK_PASSWORD : Password should be at least 6 characters':
-                return 'Please enter at least 6 characters for the password.';
-            default: return 'Something went wrong';
-        }
-    };
-
-    displayErrorMsg = () => {
+    const displayErrorMsg = () => {
         let errorMessage = null;
-        if(this.props.error !== null) {
+        if(props.error !== null) {
             errorMessage = (
                 <p className={classes.Error}>
-                    {this.formatErrorMessage(this.props.error.message)}
+                    {formatErrorMessage(props.error.message)}
                 </p>
             );
         }
         return errorMessage;
     };
 
-    render () {
-        return (
-            <div className={classes.Auth}>
-                <form onSubmit={this.submitHandler}>
-                    {this.renderForm()}
-                    <Button btnType="Success">Submit</Button>
-                </form>
-                <Button btnType="Danger" clicked={this.switchAuthModeHandler}>
-                    Switch to {this.state.isSignup ? ' Sign In' : ' Sign Up'}
-                </Button>
-                {this.redirectOnAuth()}
-                {this.displayErrorMsg()}
-            </div>
-        );
-    }
-}
+    return (
+        <div className={classes.Auth}>
+            <form onSubmit={submitHandler}>
+                {renderForm()}
+                <Button btnType="Success">Submit</Button>
+            </form>
+            <Button btnType="Danger" clicked={switchAuthModeHandler}>
+                Switch to {isSignup ? ' Sign In' : ' Sign Up'}
+            </Button>
+            {redirectOnAuth()}
+            {displayErrorMsg()}
+        </div>
+    );
+};
 
 const mapStateToProps = state => {
     return {
@@ -181,4 +175,4 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Auth);
+export default connect(mapStateToProps, mapDispatchToProps)(auth);
